@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  username: MyString
+  title: MyString
+  content: MyText
+  upvotes: 1
+  category: one
+  timestamp: 2023-12-30
+
+two:
+  username: MyString
+  title: MyString
+  content: MyText
+  upvotes: 1
+  category: two
+  timestamp: 2023-12-30
