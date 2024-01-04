@@ -1,5 +1,5 @@
 class Category < ApplicationRecord
-  has_many :posts
+  has_many :threds
   
   validates :name, presence: true
   validates :description, presence: true

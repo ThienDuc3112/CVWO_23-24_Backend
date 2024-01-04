@@ -1,7 +1,7 @@
 class PostController < ApplicationController
     def index 
         @posts = Post.all
-        render json: @posts
+        render json: @posts, except: [:content]
     end
     def show 
         @post = Post.find(params[:id])

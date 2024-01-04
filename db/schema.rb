@@ -21,31 +21,23 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_30_085918) do
 
   create_table "posts", force: :cascade do |t|
     t.string "username"
-    t.string "title"
     t.text "content"
     t.integer "upvotes"
-    t.integer "category_id", null: false
+    t.integer "thred_id", null: false
     t.date "timestamp"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["category_id"], name: "index_posts_on_category_id"
+    t.index ["thred_id"], name: "index_posts_on_thred_id"
   end
 
-  create_table "posts_tags", id: false, force: :cascade do |t|
-    t.integer "tag_id", null: false
-    t.integer "post_id", null: false
-    t.index ["post_id"], name: "index_posts_tags_on_post_id"
-    t.index ["tag_id", "post_id"], name: "index_posts_tags_on_tag_id_and_post_id", unique: true
-    t.index ["tag_id"], name: "index_posts_tags_on_tag_id"
-  end
-
-  create_table "tags", force: :cascade do |t|
-    t.string "name"
+  create_table "threds", force: :cascade do |t|
+    t.string "title"
+    t.integer "category_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["category_id"], name: "index_threds_on_category_id"
   end
 
-  add_foreign_key "posts", "categories"
-  add_foreign_key "posts_tags", "posts"
-  add_foreign_key "posts_tags", "tags"
+  add_foreign_key "posts", "threds"
+  add_foreign_key "threds", "categories"
 end
