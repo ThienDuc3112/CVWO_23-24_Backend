@@ -10,10 +10,11 @@ class ThredController < ApplicationController
     
     def create
         @post = Post.new(post_params())
-        @post.thread = Thred.new
-        @post.thread.category = Category.find(params[:post][:category])
-        if @post.thread.save
-            @post.upvotes = 0
+        @post.upvotes = 0
+        @post.thred = Thred.new
+        @post.thred.title = params[:post][:title]
+        @post.thred.category = Category.find(params[:post][:category])
+        if @post.thred.save
             p @post
             if @post.save
                 render json: @post
@@ -21,13 +22,13 @@ class ThredController < ApplicationController
                 render json: @post.errors.full_messages, status: :unprocessable
             end
         else
-            render json: @post.thread, status: :unprocessable
+            render json: @post.thred, status: :unprocessable
         end
     end
     
     private 
     def post_params
-        params.require(:post).permit(:username, :title, :content)
+        params.require(:post).permit(:username, :content)
     end
     def format_thread_preview(thread)
         post = thread.posts.first
