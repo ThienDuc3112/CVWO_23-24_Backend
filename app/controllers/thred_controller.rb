@@ -3,11 +3,12 @@ class ThredController < ApplicationController
         @threds = Thred.all
         render json: @threds.map {|thread| format_thread_preview(thread)}, except:[:content]
     end
+
     def show
         @thread = Thred.find params[:id]
-        render json: formath_thread(@thread) 
+        render json: format_thread(@thread) 
     end
-    
+
     def create
         @post = Post.new(post_params())
         @post.upvotes = 0
@@ -17,15 +18,26 @@ class ThredController < ApplicationController
         if @post.thred.save
             p @post
             if @post.save
-                render json: @post
+                render json: format_thread( @post.thred) 
             else
-                render json: @post.errors.full_messages, status: :unprocessable
+                render json: @post.errors, status: :unprocessable_entity
             end
         else
-            render json: @post.thred, status: :unprocessable
+            render json: @post.thred, status: :unprocessable_entity
         end
     end
-    
+
+    def followup
+        @thread = Thred.find params[:id]
+        @post = @thread.posts.new post_params
+        @post.upvotes = 0
+        if @post.save
+            render json: @post
+        else 
+            render json: @post.errors, status: :unprocessable_entity
+        end
+    end
+
     private 
     def post_params
         params.require(:post).permit(:username, :content)
@@ -40,7 +52,7 @@ class ThredController < ApplicationController
             created_at: thread.created_at ,
         }
     end
-    def formath_thread(thread) 
+    def format_thread(thread) 
         {
             id: thread.id,
             title:thread.title,
