@@ -19,25 +19,27 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_30_085918) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "posts", force: :cascade do |t|
-    t.string "username"
+  create_table "followups", force: :cascade do |t|
     t.text "content"
+    t.string "username"
     t.integer "upvotes"
     t.integer "thred_id", null: false
-    t.date "timestamp"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["thred_id"], name: "index_posts_on_thred_id"
+    t.index ["thred_id"], name: "index_followups_on_thred_id"
   end
 
   create_table "threds", force: :cascade do |t|
     t.string "title"
+    t.string "username"
+    t.text "content"
+    t.integer "upvotes"
     t.integer "category_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["category_id"], name: "index_threds_on_category_id"
   end
 
-  add_foreign_key "posts", "threds"
+  add_foreign_key "followups", "threds"
   add_foreign_key "threds", "categories"
 end

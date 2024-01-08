@@ -1,4 +1,4 @@
-class Post < ApplicationRecord
+class Followup < ApplicationRecord
   belongs_to :thred
 
   validates :username, presence: true
