@@ -30,6 +30,21 @@ class ThredController < ApplicationController
             render json: @post.errors, status: :unprocessable_entity
         end
     end
+    
+    def update 
+        @thread = Thred.find params[:id]
+        if @thread.update thread_params
+            render json: @thread, except: [:followups]
+        else
+            render json: @thread.errors, status: :unprocessable_entity
+        end
+    end
+    def destroy
+        @thread = Thred.find params[:id]
+        @thread.destroy
+
+        render json: @thread
+    end
 
     private 
     def thread_params
