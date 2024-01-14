@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   get "thread/:id", to: "thred#show"
   get "thread/upvote/:id", to: "thred#upvote"
   get "thread/downvote/:id", to: "thred#downvote"
+  get "thread/search/:keyword", to: "thred#search"
   post "thread", to: "thred#create"
   post "thread/:id", to: "thred#followup"
   patch "thread/:id", to: "thred#update"
@@ -11,6 +12,7 @@ Rails.application.routes.draw do
   delete "thread/:id", to: "thred#destroy"  
 
   resources :category, only:[:index, :show]
+
   resources :followup, only:[:show, :update, :destroy]
   get "followup/upvote/:id", to: "followup#upvote"
   get "followup/downvote/:id", to: "followup#downvote"

@@ -59,11 +59,25 @@ class ThredController < ApplicationController
             render json: @thread.errors, status: :unprocessable_entity
         end
     end
+
     def destroy
         @thread = Thred.find params[:id]
         @thread.destroy
 
         render json: @thread
+    end
+
+    def search
+        if params[:keyword].present?
+            @keyword = params[:keyword]
+            keywords = @keyword.split(/\s+/)
+            conditions = Array.new(keywords.length, "(title LIKE ? OR username LIKE ? OR content LIKE ?)").join(" AND ")
+            values = Array.new(keywords.length, "%#{@keyword}%")
+            @threads = Thred.where(conditions, *values.cycle(3))
+        else
+            @threads = []
+        end
+        render json: @threads
     end
 
     private 
