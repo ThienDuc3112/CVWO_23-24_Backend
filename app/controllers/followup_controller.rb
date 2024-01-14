@@ -3,6 +3,27 @@ class FollowupController < ApplicationController
         @followup = Followup.find params[:id]
         render json: @followup
     end
+    
+    def upvote
+        @followup= Followup.find params[:id]
+        @followup.upvotes += 1
+        if @followup.save
+            render json: :nothing,  status: 204
+        else 
+            render @followup.errors, status: :unprocessable_entity
+        end
+    end
+
+    def downvote
+        @followup = Followup.find params[:id]
+        @followup.upvotes -= 1
+        if @followup.save
+            render json: :nothing, status: 204
+        else 
+            render @followup.errors, status: :unprocessable_entity
+        end
+    end
+    
     def update
         @followup = Followup.find params[:id]
         if @followup.update followup_params

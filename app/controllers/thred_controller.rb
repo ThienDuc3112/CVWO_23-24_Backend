@@ -9,6 +9,26 @@ class ThredController < ApplicationController
         render json: @thread.as_json(include: [:followups]) 
     end
 
+    def upvote
+        @thread = Thred.find params[:id]
+        @thread.upvotes += 1
+        if @thread.save
+            render json: :nothing, status: :no_content 
+        else 
+            render @thread.errors, status: :unprocessable_entity
+        end
+    end
+
+    def downvote
+        @thread = Thred.find params[:id]
+        @thread.upvotes -= 1
+        if @thread.save
+            render json: :nothingk, status: :no_content
+        else 
+            render @thread.errors, status: :unprocessable_entity
+        end
+    end
+
     def create
         @thread = Thred.new( thread_params)
         @thread.upvotes = 0
