@@ -1,36 +1,26 @@
 class ThredController < ApplicationController
+    before_action :find_thread, only: [:show, :upvote, :downvote, :update, :destroy, :followup]
+    
     def index
         @threds = Thred.all
         render json: @threds, except:[:content, :followups]
     end
-
     def show
-        @thread = Thred.find params[:id]
         render json: @thread.as_json(include: [:followups]) 
     end
 
     def upvote
-        @thread = Thred.find params[:id]
-        @thread.upvotes += 1
-        if @thread.save
-            render json: :nothing, status: :no_content 
-        else 
-            render @thread.errors, status: :unprocessable_entity
-        end
+        @thread.increment!(:upvotes)
+        head :no_content
     end
 
     def downvote
-        @thread = Thred.find params[:id]
-        @thread.upvotes -= 1
-        if @thread.save
-            render json: :nothingk, status: :no_content
-        else 
-            render @thread.errors, status: :unprocessable_entity
-        end
+        @thread.decrement!(:upvotes)
+        head :no_content
     end
 
     def create
-        @thread = Thred.new( thread_params)
+        @thread = Thred.new(thread_params)
         @thread.upvotes = 0
         @thread.category = Category.find params[:thread][:category]
         if @thread.save
@@ -41,8 +31,7 @@ class ThredController < ApplicationController
     end
 
     def followup
-        @thread = Thred.find params[:id]
-        @post = @thread.followups.new post_params
+        @post = @thread.followups.new(post_params)
         @post.upvotes = 0
         if @post.save
             render json: @post
@@ -50,10 +39,9 @@ class ThredController < ApplicationController
             render json: @post.errors, status: :unprocessable_entity
         end
     end
-    
+
     def update 
-        @thread = Thred.find params[:id]
-        if @thread.update thread_params
+        if @thread.update(thread_params)
             render json: @thread, except: [:followups]
         else
             render json: @thread.errors, status: :unprocessable_entity
@@ -61,9 +49,7 @@ class ThredController < ApplicationController
     end
 
     def destroy
-        @thread = Thred.find params[:id]
         @thread.destroy
-
         render json: @thread
     end
 
@@ -83,9 +69,13 @@ class ThredController < ApplicationController
     private 
     def thread_params
         params.require(:thread).permit(:username, :content, :title)
-
     end
+    
     def post_params
         params.require(:post).permit(:username, :content)
+    end
+
+    def find_thread
+        @thread = Thred.find(params[:id])
     end
 end

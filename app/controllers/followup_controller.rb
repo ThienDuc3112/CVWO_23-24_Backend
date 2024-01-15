@@ -1,32 +1,19 @@
 class FollowupController < ApplicationController
+    before_action :set_followup, only: [:show, :upvote, :downvote, :update, :destroy]
+
     def show
-        @followup = Followup.find params[:id]
         render json: @followup
     end
     
     def upvote
-        @followup= Followup.find params[:id]
-        @followup.upvotes += 1
-        if @followup.save
-            render json: :nothing,  status: 204
-        else 
-            render @followup.errors, status: :unprocessable_entity
+        change_vote(1)
         end
-    end
-
     def downvote
-        @followup = Followup.find params[:id]
-        @followup.upvotes -= 1
-        if @followup.save
-            render json: :nothing, status: 204
-        else 
-            render @followup.errors, status: :unprocessable_entity
+        change_vote(-1)
         end
-    end
     
     def update
-        @followup = Followup.find params[:id]
-        if @followup.update followup_params
+        if @followup.update(followup_params)
             render json: @followup
         else
             render json: @followup.errors, status: :unprocessable_entity
@@ -34,13 +21,25 @@ class FollowupController < ApplicationController
     end
 
     def destroy
-        @followup = Followup.find params[:id]
         @followup.destroy
-
         render json: @followup
     end
+
     private
+    def set_followup
+        @followup = Followup.find(params[:id])
+    end
+
     def followup_params
         params.require(:post).permit(:content, :username)
+    end
+
+    def change_vote(value)
+        @followup.upvotes += value
+        if @followup.save
+            render json: :nothing, status: 204
+        else 
+            render json: @followup.errors, status: :unprocessable_entity
+        end
     end
 end
