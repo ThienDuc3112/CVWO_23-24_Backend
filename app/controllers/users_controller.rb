@@ -20,7 +20,7 @@ class UsersController < ApplicationController
     @user.password = params[:user][:password]
     @user.password_confirmation = params[:user][:password_confirmation]
     if @user.save
-      render json: @user, status: :created, location: @user
+      render json: @user, status: :created, location: @user, except: [:password_digest, :verify_token]
     else
       render json: @user.errors ,status: :unprocessable_entity
     end

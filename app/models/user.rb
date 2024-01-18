@@ -3,7 +3,7 @@ class User < ApplicationRecord
     before_create :set_defaults
 
     validates :username, presence: true, uniqueness: true
-    validates :email, presence: true
+    validates :email, format: {with: /[\w+\-.]+@[a-z\d\-.]+\.[a-z]+/i, message: "Is not a valid email address"}
     validates :password_confirmation, presence:true, on: :create
     
     private 
