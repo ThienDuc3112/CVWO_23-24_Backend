@@ -1,6 +1,8 @@
 class ThredController < ApplicationController
-    before_action :find_thread, only: [:show, :upvote, :downvote, :update, :destroy, :followup]
-    
+    include Auth
+    before_action :find_thread, only: %i[show upvote downvote update destroy followup]
+    before_action :get_user, except: %i[index show]
+
     def index
         @threds = Thred.all
         render json: @threds, except:[:content, :followups]

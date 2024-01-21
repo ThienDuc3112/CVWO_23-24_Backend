@@ -1,5 +1,7 @@
 class FollowupController < ApplicationController
+    include Auth
     before_action :set_followup, only: [:show, :upvote, :downvote, :update, :destroy]
+    before_action :get_user, except: :show
 
     def show
         render json: @followup

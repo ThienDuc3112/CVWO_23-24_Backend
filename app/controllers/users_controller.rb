@@ -1,5 +1,7 @@
 class UsersController < ApplicationController
+  include Auth
   before_action :set_user, only: %i[ show update destroy]
+  before_action :get_user, only: :verify
 
   # GET /users
   def index
@@ -64,15 +66,7 @@ class UsersController < ApplicationController
   end
 
   def verify
-    token = request.headers['Authorization']&.split(' ')&.last
-    res = verify_token(token)
-    if res.first 
-      # render json: res.first
-      @user = User.find(res.first["id"])
-      render json: @user, except: [:password_digest, :email, :verify_token]
-    else 
-      render json: {message: res.last}, status: :unauthorized
-    end
+    render json: @user, except: [:password_digest, :email, :verify_token]
   end
 
   private
@@ -88,15 +82,5 @@ class UsersController < ApplicationController
 
     def find_user(login)
       User.where("username = :value OR email = :value", value: login).first
-    end
-    
-    def verify_token(token)
-      @decoded_token = JWT.decode(token, ENV["SECRET_KEY"])
-      rescue JWT::ExpiredSignature
-        return [nil, "Expired token"]
-      rescue JWT::DecodeError
-        return [nil, "Invalid token"]
-      rescue => e
-        return [nil, e&.message]
     end
 end
