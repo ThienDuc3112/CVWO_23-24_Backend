@@ -5,10 +5,10 @@ class ThredController < ApplicationController
 
     def index
         @threds = Thred.all
-        render json: @threds, except:[:content, :followups]
+        render json: @threds, except:[:content, :followups], include: {user: {only: :username}}
     end
     def show
-        render json: @thread.as_json(include: [:followups]) 
+        render json: @thread.as_json(include: [:followups, user:{only: :username}])
     end
 
     def upvote
@@ -23,6 +23,7 @@ class ThredController < ApplicationController
 
     def create
         @thread = Thred.new(thread_params)
+        @thread.user = @user
         @thread.upvotes = 0
         @thread.category = Category.find params[:thread][:category]
         if @thread.save
@@ -43,7 +44,9 @@ class ThredController < ApplicationController
     end
 
     def update 
-        if @thread.update(thread_params)
+        if @thread.user.id != @user.id && !@user.is_admin
+            render json: {message: "Unauthorize"}, status: :unauthorized
+        elsif @thread.update(thread_params)
             render json: @thread, except: [:followups]
         else
             render json: @thread.errors, status: :unprocessable_entity
@@ -51,8 +54,12 @@ class ThredController < ApplicationController
     end
 
     def destroy
-        @thread.destroy
-        render json: @thread
+        if @thread.user.id != @user.id && !@user.is_admin
+            render json:{message: "Unauthorize"}, status: :unauthorized
+        else
+            @thread.destroy
+            render json: @thread
+        end
     end
 
     def search
@@ -70,7 +77,7 @@ class ThredController < ApplicationController
 
     private 
     def thread_params
-        params.require(:thread).permit(:username, :content, :title)
+        params.require(:thread).permit(:content, :title)
     end
     
     def post_params

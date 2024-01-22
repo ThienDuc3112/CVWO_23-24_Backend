@@ -1,6 +1,6 @@
 class FollowupController < ApplicationController
     include Auth
-    before_action :set_followup, only: [:show, :upvote, :downvote, :update, :destroy]
+    before_action :set_followup, only: %i[ show upvote downvote update destroy]
     before_action :get_user, except: :show
 
     def show
@@ -9,13 +9,15 @@ class FollowupController < ApplicationController
     
     def upvote
         change_vote(1)
-        end
+    end
     def downvote
         change_vote(-1)
-        end
+    end
     
     def update
-        if @followup.update(followup_params)
+        if !@user.is_admin && @user.id != @followup.user.id
+            render json: {message:"Unauthorized"}, status: :unauthorized
+        elsif @followup.update(followup_params)
             render json: @followup
         else
             render json: @followup.errors, status: :unprocessable_entity
@@ -23,8 +25,12 @@ class FollowupController < ApplicationController
     end
 
     def destroy
-        @followup.destroy
-        render json: @followup
+        if !@user.is_admin && @user.id != @followup.user.id
+            render json: {message:"Unauthorized"}, status: :unauthorized
+        else
+            @followup.destroy
+            render json: @followup
+        end
     end
 
     private
