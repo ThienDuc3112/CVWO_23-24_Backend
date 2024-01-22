@@ -4,7 +4,7 @@ class FollowupController < ApplicationController
     before_action :get_user, except: :show
 
     def show
-        render json: @followup
+        render json: @followup, include: [user: {only: :username}]
     end
     
     def upvote
@@ -39,7 +39,7 @@ class FollowupController < ApplicationController
     end
 
     def followup_params
-        params.require(:post).permit(:content, :username)
+        params.require(:post).permit(:content)
     end
 
     def change_vote(value)

@@ -1,14 +1,15 @@
 class ThredController < ApplicationController
     include Auth
     before_action :find_thread, only: %i[show upvote downvote update destroy followup]
-    before_action :get_user, except: %i[index show]
+    before_action :get_user, except: %i[index show search]
 
     def index
         @threds = Thred.all
         render json: @threds, except:[:content, :followups], include: {user: {only: :username}}
     end
     def show
-        render json: @thread.as_json(include: [:followups, user:{only: :username}])
+        # This is the most horrendous line of unreadable code I have written in this project
+        render json: @thread.as_json(include: [followups: {include: [user:{only: :username}]}, user:{only: :username}])
     end
 
     def upvote
@@ -36,8 +37,9 @@ class ThredController < ApplicationController
     def followup
         @post = @thread.followups.new(post_params)
         @post.upvotes = 0
+        @post.user = @user
         if @post.save
-            render json: @post
+            render json: @post, include: [user: {only: :username}]
         else 
             render json: @post.errors, status: :unprocessable_entity
         end
@@ -66,9 +68,9 @@ class ThredController < ApplicationController
         if params[:keyword].present?
             @keyword = params[:keyword]
             keywords = @keyword.split(/\s+/)
-            conditions = Array.new(keywords.length, "(title LIKE ? OR username LIKE ? OR content LIKE ?)").join(" AND ")
+            conditions = Array.new(keywords.length, "(title LIKE ? OR content LIKE ?)").join(" AND ")
             values = Array.new(keywords.length, "%#{@keyword}%")
-            @threads = Thred.where(conditions, *values.cycle(3))
+            @threads = Thred.where(conditions, *values.cycle(2))
         else
             @threads = []
         end
@@ -81,7 +83,7 @@ class ThredController < ApplicationController
     end
     
     def post_params
-        params.require(:post).permit(:username, :content)
+        params.require(:post).permit(:content)
     end
 
     def find_thread
