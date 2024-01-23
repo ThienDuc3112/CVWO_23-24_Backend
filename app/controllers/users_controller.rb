@@ -21,6 +21,9 @@ class UsersController < ApplicationController
     @user.username.downcase!
     @user.password = params[:user][:password]
     @user.password_confirmation = params[:user][:password_confirmation]
+    if User.count == 0
+      @user.is_admin = true
+    end
     if @user.save
       render json: @user, status: :created, location: @user, except: [:password_digest, :verify_token]
     else

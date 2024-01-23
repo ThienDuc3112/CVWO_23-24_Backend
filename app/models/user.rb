@@ -1,8 +1,8 @@
 class User < ApplicationRecord
     has_secure_password
     before_create :set_defaults
-    has_many :threds
-    has_many :followups
+    has_many :threds, dependent: :destroy
+    has_many :followups, dependent: :destroy
 
     validates :username, presence: true, uniqueness: true
     validates :email, format: {with: /[\w+\-.]+@[a-z\d\-.]+\.[a-z]+/i, message: "Is not a valid email address"}
