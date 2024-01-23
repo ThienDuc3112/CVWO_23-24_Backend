@@ -1,19 +1,24 @@
 class FollowupController < ApplicationController
     include Auth
     before_action :set_followup, only: %i[ show upvote downvote update destroy]
-    before_action :get_user, except: :show
+    before_action :get_user, except: %i[ show show_by_user ]
 
     def show
         render json: @followup, include: [user: {only: :username}]
     end
     
+    def show_by_user
+        @user = User.find params[:id]
+        render json: @user.followups, include: [user:{only: :username}]
+    end
+
     def upvote
         change_vote(1)
     end
     def downvote
         change_vote(-1)
     end
-    
+
     def update
         if !@user.is_admin && @user.id != @followup.user.id
             render json: {message:"Unauthorized"}, status: :unauthorized

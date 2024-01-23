@@ -40,7 +40,8 @@ class UsersController < ApplicationController
         }, ENV["SECRET_KEY"], "HS256"), user: {
           username: @user.username,
           id: @user.id,
-          is_admin: @user.is_admin
+          is_admin: @user.is_admin,
+          created_at: @user.created_at
         }}
       else 
         render json: {password: "Incorrect password"}, status: :unauthorized

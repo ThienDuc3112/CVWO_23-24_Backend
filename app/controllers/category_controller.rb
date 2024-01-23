@@ -6,7 +6,7 @@ class CategoryController < ApplicationController
 
     def show
         @category = Category.find params[:id]
-        render json: @category.threds, except: [:content]
+        render json: @category.threds, except: [:content], include: [user: {only: :username}]
     end
 
     private 
