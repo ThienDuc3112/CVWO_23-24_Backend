@@ -67,7 +67,7 @@ class ThredController < ApplicationController
     def update 
         if @thread.user.id != @user.id && !@user.is_admin
             render json: {message: "Unauthorize"}, status: :unauthorized
-        elsif @thread.update(thread_params)
+        elsif @thread.update(title: params[:thread][:title], content: params[:thread][:content], category: Category.find(params[:thread][:category]))
             render json: @thread, except: [:followups]
         else
             render json: @thread.errors, status: :unprocessable_entity
