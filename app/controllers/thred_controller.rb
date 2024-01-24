@@ -28,7 +28,7 @@ class ThredController < ApplicationController
         else
             @threads = []
         end
-        render json: @threads
+        render json: @threads, include: [user: {only: :username}]
     end
 
     def upvote

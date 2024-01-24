@@ -17,7 +17,7 @@ Rails.application.routes.draw do
   put "thread/:id", to: "thred#update"
   delete "thread/:id", to: "thred#destroy"  
 
-  resources :category, only: %i[index show create]
+  resources :category, only: %i[index show create destroy]
 
   resources :followup, only:[:show, :update, :destroy]
   get "followup/upvote/:id", to: "followup#upvote"
